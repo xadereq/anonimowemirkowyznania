@@ -10,7 +10,6 @@ wykop.login(config.wykop.connection).then(function(res){
   console.log(res);
   console.log('logged In');
 });
-// dSyhTEay61JNy4tnDA2V
 mongoose.connect(config.mongoURL, (err)=>{
   if(err) throw err;
 });
