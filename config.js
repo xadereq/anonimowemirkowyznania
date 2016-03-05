@@ -1,4 +1,4 @@
-module.exports =
+module.exports = {
   //http://www.wykop.pl/dla-programistow/twoje-aplikacje/
   wykop: {
     key: '',
