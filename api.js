@@ -1,16 +1,17 @@
 var express = require('express');
 var apiRouter = express.Router();
 var mongoose = require('mongoose');
+var config = require('./config.js');
 var Wykop = require('wykop-es6');
-var wykop = new Wykop('Vqoy4XvILb', '1CCpKUkUSL');
+var wykop = new Wykop(config.wykop.key, config.wykop.secret);
 var confessionModel = require('./models/confession.js');
 
-wykop.login('yRhi0Dm2N9VguXPjkYC0').then(function(res){
+wykop.login(config.wykop.connection).then(function(res){
   console.log(res);
   console.log('logged In');
 });
 // dSyhTEay61JNy4tnDA2V
-mongoose.connect('mongodb://mo1247_test:dSyhTEay61JNy4tnDA2V@mongo6.mydevil.net:27017/mo1247_test', (err)=>{
+mongoose.connect(config.mongoURL, (err)=>{
   if(err) throw err;
 });
 
@@ -19,8 +20,8 @@ mongoose.connect('mongodb://mo1247_test:dSyhTEay61JNy4tnDA2V@mongo6.mydevil.net:
 apiRouter.use((req, res, next)=>{
   console.log('API requested');
   //BASIC authorization
-  if(req.headers.authorization != 'Basic RmlsaXA6bW9kZXJ1amUxMjM='){
-    console.log('cannot authorize ')
+  if(req.headers.authorization != config.authString){
+    console.log('cannot authorize');
     res.json({success: false, response: {message: 'authorization required'}});
     return;
   }
