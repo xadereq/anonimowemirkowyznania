@@ -45,7 +45,7 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       console.log('already added');
       return;
     }
-    var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
+    var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
       if(err) throw err;
       confession.entryID = response.id;
@@ -67,13 +67,13 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
   console.log(req.params.reply_id);
   replyModel.findById(req.params.reply_id, (err, reply)=>{
     if(err) res.send(err);
-    reply.authorized = '';
+    var authorized = '';
     if(reply.authorized){
-      var authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
+      authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
     }
     var entryBody = `**${reply.alias}**: ${reply.text}\n\nTo jest anonimowy komentarz${authorized}`;
     wykop.request('Entries', 'AddComment', {params: [reply.parentID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
-      if(err) throw err;
+      if(err){console.log(err); return;}
       reply.commentID = response.id;
       reply.accepted = true;
       reply.save((err)=>{

@@ -1,0 +1,25 @@
+extends ./base.jade
+block content
+  input#auth
+  table.table.table-stripped
+    tr
+      td _id
+      td text
+      td embed
+      td authString
+      td entryID
+      td ACTIONS
+      each confession, index in confessions
+        tr(class=confession.accepted ? 'success' : 'warning')
+          td #{confession._id}
+          td #{confession.text}
+          td
+           a(href="#{confession.embed}", target="_blank") #{confession.embed}
+          td #{confession.auth}
+          td 
+            a(href="http://wykop.pl/wpis/#{confession.entryID}", target="_blank") #{confession.entryID}
+          td
+            span.accept(data-action="add", data-id="#{confession._id}", data-endpoint="confession") dodaj
+block script
+  script(type="text/javascript")
+    include ./scripts/panel.js

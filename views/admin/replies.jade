@@ -1,0 +1,27 @@
+extends ./base.jade
+block content
+  input#auth
+  table.table.table-stripped
+    tr
+      td _id
+      td alias
+      td text
+      td embed
+      td authString
+      td parentID
+      td ACTIONS
+      each reply, index in replies
+        tr(class=reply.accepted ? 'success' : 'warning')
+          td #{reply._id}
+          td #{reply.alias}
+          td #{reply.text}
+          td
+           a(href="#{reply.embed}", target="_blank") #{reply.embed}
+          td #{reply.auth}
+          td 
+            a(href="http://wykop.pl/wpis/#{reply.parentID}", target="_blank") #{reply.parentID}
+          td
+            span.accept(data-action="add", data-id="#{reply._id}", data-endpoint="reply") dodaj
+block script
+  script(type="text/javascript")
+    include ./scripts/panel.js
