@@ -1,7 +1,11 @@
 extends ./base.jade
 block content
   if success
-    .alert.alert-success <strong>Dodano!</strong> Wyznanie pojawi się na mikroblogu po zaakceptowaniu.<br />Jeśli chcesz to zapisz ten kod: <strong>#{confession.auth}</strong> (umożliwi on Ci w przyszłościu udowodnienie autorstwa tego wpisu).
+    .alert.alert-success
+      strong Dodano!
+      | Wyznanie pojawi się na mikroblogu po zaakceptowaniu
+      br
+      | Jeśli chcesz to zapisz ten kod: <strong>#{confession.auth}</strong> (dzięki niemu będziesz mogł odpowiadać w swoim wpisie jako OP).
   p.info Napisz co leży Ci na sercu, post zostanie opublikowany anonimowo (z konta @sokytsinolop) na mikroblogu po zaakceptowaniu.
    .add-confession
      h1 Dodaj wyznanie

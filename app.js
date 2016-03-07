@@ -3,6 +3,7 @@ var app = express();
 var bodyParser = require('body-parser');
 var apiRouter = require('./api.js');
 var confessionModel = require('./models/confession.js');
+var replyModel = require('./models/reply.js');
 var crypto = require('crypto');
 
 const _port = 1337;
@@ -27,6 +28,34 @@ app.post('/', (req, res)=>{
   confession.save((err)=>{
     if(err) res.send(err);
       res.render('index', {success: true, confession: confession});
+  });
+});
+app.get('/reply/:confessionid', (req, res)=>{
+  confessionModel.findById(req.params.confessionid, (err, confession)=>{
+  if(err){res.json({success: false, response:{message: 'confession not found'}}); return;}
+  res.render('reply', {confession: confession});
+  });
+});
+app.post('/reply/:confessionid', (req, res)=>{
+  confessionModel.findById(req.params.confessionid, (err, confession)=>{
+    if(err){res.json({success: false, response:{message: 'confession not found'}}); return;}
+    if(confession){
+    var reply = new replyModel();
+    reply.text = req.body.text;
+    reply.embed = req.body.embed;
+    reply.alias = req.body.alias || "Anon";
+    if(reply.alias == confession.auth){
+      repy.alias = "OP (verified)";
+    }
+    reply.auth = crypto.randomBytes(5).toString('hex');
+    reply.parentID = confession.entryID;
+    reply.save((err)=>{
+      if(err) res.send(err);
+        res.render('reply', {success: true, reply: reply, confession: confession});
+    });
+    }else{
+        res.json({success: false, response:{message: 'confession not found'}});
+    }
   });
 });
 app.get('/cotojest', (req, res)=>{

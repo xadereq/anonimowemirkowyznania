@@ -1,0 +1,18 @@
+extends ./base.jade
+block content
+  if success
+    .alert.alert-success
+      strong Dodano!
+      | Wyznanie pojawi się na mikroblogu po zaakceptowaniu
+      br
+      | Jeśli chcesz to zapisz ten kod: <strong>#{reply.auth}</strong> (umożliwi on Ci w przyszłościu udowodnienie autorstwa tego komentarza).
+  .add-reply
+    h1 Dodaj komentarz do 
+      a(href='http://wykop.pl/wpis/#{confession.entryID}', target='_blank') tego wyznania
+    form#reply(method="post")
+      textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoj komentarz")
+      br
+      input.form-control(type="text", name="alias", placeholder="Pseudonim (wpisz kod potwierdzający, a zostaniesz oznaczony jako OP)" maxlength=32)
+      br
+      input.form-control(type="text", name="embed", placeholder="URL do obrazka", maxlength=3000)
+      button.btn.btn-large.btn-success(type="submit") Wyślij
