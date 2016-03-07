@@ -5,6 +5,7 @@ var config = require('./config.js');
 var Wykop = require('wykop-es6');
 var wykop = new Wykop(config.wykop.key, config.wykop.secret);
 var confessionModel = require('./models/confession.js');
+var replyModel = require('./models/reply.js');
 
 wykop.login(config.wykop.connection).then(function(res){
   console.log(res);
@@ -44,7 +45,7 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       console.log('already added');
       return;
     }
-    var entryBody = '#anonimowemirkowyznania \n'+confession.text+'\n\n Post dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.';
+    var entryBody = '#anonimowemirkowyznania \n'+confession.text+'\n\n [Kliknij tutaj, aby odpowiedzieć anonimowo](http://p4nic.usermd.net/reply/'+confession._id+') \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.';
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
       if(err) throw err;
       confession.entryID = response.id;
@@ -52,6 +53,28 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       confession.save((err)=>{
         if(err) res.send(err);
         res.json({success: true, response: {message: 'Entry added', entryID: response.id}});
+      });
+    });
+  });
+});
+apiRouter.route('/reply').get((req, res)=>{
+  reply.find((err, replies)=>{
+    if(err) res.send(err);
+    res.json(replies);
+  });
+});
+apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
+  console.log(req.params.reply_id);
+  replyModel.findById(req.params.reply_id, (err, reply)=>{
+    if(err) res.send(err);
+    var entryBody = '**'+reply.alias+'**: \n\n'+reply.text;
+    wykop.request('Entries', 'AddComment', {params: [reply.parentID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
+      if(err) throw err;
+      reply.commentID = response.id;
+      reply.accepted = true;
+      reply.save((err)=>{
+        if(err) res.send(err);
+        res.json({success: true, response: {message: 'Reply added', commentID: response.id}});
       });
     });
   });
