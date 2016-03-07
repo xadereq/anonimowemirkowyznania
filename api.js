@@ -67,6 +67,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
   console.log(req.params.reply_id);
   replyModel.findById(req.params.reply_id, (err, reply)=>{
     if(err) res.send(err);
+    reply.authorized = '';
     if(reply.authorized){
       var authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
     }
