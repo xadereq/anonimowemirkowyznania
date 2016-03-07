@@ -67,7 +67,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
   console.log(req.params.reply_id);
   replyModel.findById(req.params.reply_id, (err, reply)=>{
     if(err) res.send(err);
-    var entryBody = '**'+reply.alias+'**: \n\n'+reply.text;
+    var entryBody = '**'+reply.alias+'**: '+reply.text+'\n\nTo jest anonimowy komentarz';
     wykop.request('Entries', 'AddComment', {params: [reply.parentID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
       if(err) throw err;
       reply.commentID = response.id;
