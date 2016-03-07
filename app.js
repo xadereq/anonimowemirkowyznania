@@ -45,7 +45,7 @@ app.post('/reply/:confessionid', (req, res)=>{
     reply.embed = req.body.embed;
     reply.alias = req.body.alias || "Anon";
     if(reply.alias == confession.auth){
-      repy.alias = "OP (verified)";
+      reply.alias = "OP";
     }
     reply.auth = crypto.randomBytes(5).toString('hex');
     reply.parentID = confession.entryID;

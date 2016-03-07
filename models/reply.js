@@ -6,6 +6,7 @@ var replySchema = new Schema({
     alias: String,
     embed: String,
     auth: String,
+    authorized: {type: Boolean, default: false},
     parentID: Number,
     commentID: Number,
     accepted: {type: Boolean, default: false}
