@@ -1,34 +1,13 @@
-doctype
-html( lang="pl" )
-    head
-        title Anonimowe Mirko Wyznania
-        meta( charset='utf-8' )
-        meta( http-equiv='X-UA-Compatible', content='IE=edge' )
-        meta( name='viewport', content='width=device-width, initial-scale=1.0' )
-        meta( name='description', content='Anonimowe Mirko Wyznania' )
-        link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet")
-
-        body
-           .navbar
-             .container
-               .navbar-header
-                 a.navbar-brand(href='#') Anonimowe Mirko Wyznania
-               .collapse.navbar-collapse
-                 ul.nav.navbar-nav
-                   li.active
-                     a(href='#') Dodaj
-                   li
-                     a(href='#about') O projekcie
-                   li
-                     a(href='#contact') Kontakt
-               // /.nav-collapse
-           .container
-            p.info Napisz co leży Ci na sercu, post zostanie opublikowany anonimowo na mikroblogu po zaakceptowaniu. 
-             .add-confession
-               h1 Dodaj wyznanie
-              form#confession(action="/", method="post")
-              textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoje wyznanie")
-              br
-              input.form-control(type="text", name="embed", placeholder="URL do obrazka", maxlength=3000)
-              button.btn.btn-large.btn-success(type="submit") Wyślij
-              p.info Wyznania zostaną opublikowane po zaakceptowaniu (pasta o serwerowni nie przejdzie :()
+extends ./base.jade
+block content
+  if success
+    .alert.alert-success <strong>Dodano!</strong> Wyznanie pojawi się na mikroblogu po zaakceptowaniu.<br />Jeśli chcesz to zapisz ten kod: <strong>#{confession.auth}</strong> (umożliwi on Ci w przyszłościu udowodnienie autorstwa tego wpisu).
+  p.info Napisz co leży Ci na sercu, post zostanie opublikowany anonimowo (z konta @sokytsinolop) na mikroblogu po zaakceptowaniu.
+   .add-confession
+     h1 Dodaj wyznanie
+    form#confession(action="/", method="post")
+    textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoje wyznanie")
+    br
+    input.form-control(type="text", name="embed", placeholder="URL do obrazka", maxlength=3000)
+    button.btn.btn-large.btn-success(type="submit") Wyślij
+    p.info Wyznania zostaną opublikowane po zaakceptowaniu (pasta o serwerowni nie przejdzie :()
