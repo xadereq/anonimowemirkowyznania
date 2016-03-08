@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use('/api', apiRouter);
-app.use('/sokytsinolop', adminRouter);
+app.use('/admin', adminRouter);
 
 app.set('view engine', 'jade');
 

@@ -9,5 +9,5 @@ module.exports = {
   //Authorization header: Basic base64(username:password)
   //current filip:abc
   authString: 'Basic ZmlsaXA6YWJj=',
-
+  secret: 'secretkey'
 }
