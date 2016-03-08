@@ -1,19 +1,23 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var config = require('./config.js');
 var apiRouter = require('./api.js');
 var adminRouter = require('./admin.js');
 var confessionModel = require('./models/confession.js');
 var replyModel = require('./models/reply.js');
+var userModel = require('./models/user.js');
 var crypto = require('crypto');
 
 const _port = 1337;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use('/api', apiRouter);
-app.use('/admin', adminRouter);
+app.use('/sokytsinolop', adminRouter);
 
 app.set('view engine', 'jade');
 

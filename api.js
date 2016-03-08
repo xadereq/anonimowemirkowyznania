@@ -1,6 +1,7 @@
 var express = require('express');
 var apiRouter = express.Router();
 var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
 var config = require('./config.js');
 var Wykop = require('wykop-es6');
 var wykop = new Wykop(config.wykop.key, config.wykop.secret);
@@ -14,18 +15,25 @@ wykop.login(config.wykop.connection).then(function(res){
 mongoose.connect(config.mongoURL, (err)=>{
   if(err) throw err;
 });
-
-
 /* api router */
 apiRouter.use((req, res, next)=>{
-  console.log('API requested');
-  //BASIC authorization
-  if(req.headers.authorization != config.authString){
-    console.log('cannot authorize');
-    res.json({success: false, response: {message: 'authorization required'}});
-    return;
+  var token = req.cookies.token || req.body.token || req.query.token || req.headers['x-access-token'];
+  if (token) {
+    jwt.verify(token, config.secret, function(err, decoded) {
+  if (err){
+      return res.json({ success: false, message: 'Failed to authenticate token.' });
+    }else{
+      console.log(decoded);
+      req.decoded = decoded;
+      next();
+    }
+  });
+  }else{
+    return res.status(403).json({
+      success: false,
+      response: {message: 'No token provided.'}
+    });
   }
-  next();
 });
 apiRouter.get('/', (req, res)=>{
   res.json({success: true, response: {message: 'API is working!'}});
