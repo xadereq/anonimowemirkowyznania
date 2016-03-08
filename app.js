@@ -29,8 +29,6 @@ app.post('/', (req, res)=>{
   confession.text = req.body.text;
   confession.embed = req.body.embed;
   confession.auth = crypto.randomBytes(5).toString('hex');
-  // TODO: DELCODE
-  console.log(confession);
   confession.save((err)=>{
     if(err) res.send(err);
       res.render('index', {success: true, confession: confession});
