@@ -8,7 +8,7 @@ var replyModel = require('./models/reply.js');
 var userModel = require('./models/user.js');
 //authoriztion
 adminRouter.get('/login', (req, res)=>{
-  res.render('./admin/login.jade');
+  res.render('./admin/login.jade', {user: {}});
 });
 adminRouter.post('/login', (req, res)=>{
   userModel.findOne({
@@ -31,13 +31,16 @@ adminRouter.post('/login', (req, res)=>{
     }
   });
 });
-
+adminRouter.get('/logout', (req, res)=>{
+  res.clearCookie('token');
+  res.json({success:true, response:{message: 'logged out successfully'}});
+});
 adminRouter.use((req, res, next)=>{
   var token = req.cookies.token || req.body.token || req.query.token || req.headers['x-access-token'];
   if (token) {
     jwt.verify(token, config.secret, function(err, decoded) {
   if (err){
-      return res.json({ success: false, message: 'Failed to authenticate token.' });
+      return res.json({ success: false, message: 'Failed to authenticate token. Please login again' });
     }else{
       req.decoded = decoded;
       if(req.decoded._doc.authorized){
@@ -45,7 +48,7 @@ adminRouter.use((req, res, next)=>{
       }else{
         return res.status(403).send({
           success: false,
-          response: {message: 'You\'re not authorized.'}
+          response: {message: 'You\'re not authorized. Please login'}
         });
       }
     }
@@ -63,13 +66,13 @@ adminRouter.get('/', (req, res)=>{
 adminRouter.get('/confessions', (req, res)=>{
   confessionModel.find().sort({_id: -1}).limit(100).exec((err, confessions)=>{
     if(err) res.send(err);
-    res.render('./admin/confessions.jade', {confessions: confessions});
+    res.render('./admin/confessions.jade', {user: req.decoded._doc, confessions: confessions});
   });
 });
 adminRouter.get('/replies', (req, res)=>{
   replyModel.find().sort({_id: -1}).limit(100).exec((err, replies)=>{
     if(err) res.send(err);
-    res.render('./admin/replies.jade', {replies: replies});
+    res.render('./admin/replies.jade', {user:req.decoded._doc, replies: replies});
   });
 });
 module.exports = adminRouter;
