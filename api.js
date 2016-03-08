@@ -71,6 +71,10 @@ apiRouter.route('/reply').get((req, res)=>{
 apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
   replyModel.findById(req.params.reply_id, (err, reply)=>{
     if(err) res.send(err);
+    if(reply.commentID){
+      res.json({success: false, response: {message: 'It\'s already added', commentID: reply.commentID}});
+      return;
+    }
     var authorized = '';
     if(reply.authorized){
       authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
@@ -81,6 +85,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
       reply.commentID = response.id;
       reply.accepted = true;
       reply.addedBy = req.decoded._doc.username;
+      reply.commentID = response.id;
       reply.save((err)=>{
         if(err) res.send(err);
         res.json({success: true, response: {message: 'Reply added', commentID: response.id}});
