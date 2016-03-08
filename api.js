@@ -9,7 +9,6 @@ var confessionModel = require('./models/confession.js');
 var replyModel = require('./models/reply.js');
 
 wykop.login(config.wykop.connection).then(function(res){
-  console.log(res);
   console.log('logged In');
 });
 mongoose.connect(config.mongoURL, (err)=>{
@@ -23,7 +22,6 @@ apiRouter.use((req, res, next)=>{
   if (err){
       return res.json({ success: false, message: 'Failed to authenticate token.' });
     }else{
-      console.log(decoded);
       req.decoded = decoded;
       next();
     }
@@ -45,12 +43,10 @@ apiRouter.route('/confession').get((req, res)=>{
   });
 });
 apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
-  console.log(req.params.confession_id);
   confessionModel.findById(req.params.confession_id, (err, confession)=>{
     if(err) res.send(err);
     if(confession.entryID){
       res.json({success: false, response: {message: 'It\'s already added', entryID: confession.entryID}});
-      console.log('already added');
       return;
     }
     var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
@@ -72,7 +68,6 @@ apiRouter.route('/reply').get((req, res)=>{
   });
 });
 apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
-  console.log(req.params.reply_id);
   replyModel.findById(req.params.reply_id, (err, reply)=>{
     if(err) res.send(err);
     var authorized = '';
