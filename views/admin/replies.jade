@@ -23,7 +23,7 @@ block content
             a(href="http://wykop.pl/wpis/#{reply.parentID}", target="_blank") #{reply.parentID}
           td #{reply.addedBy}
           td
-            span.accept(data-action="add", data-id="#{reply._id}", data-endpoint="reply") dodaj
+            button.btn.btn-large.btn-success.accept(data-action="add", data-id="#{reply._id}", data-endpoint="reply") Dodaj
 block script
   script(type="text/javascript")
     include ./scripts/panel.js
