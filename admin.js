@@ -24,7 +24,7 @@ adminRouter.post('/login', (req, res)=>{
       //success login
       var token = jwt.sign(user, config.secret, {expiresIn: 1440*60});
       res.cookie('token', token);
-      res.redirect('/confessions');
+      res.redirect('/admin/confessions');
     }else{
       res.json({success:false, response:{message: 'wrong password'}});
       return;
@@ -40,7 +40,14 @@ adminRouter.use((req, res, next)=>{
       return res.json({ success: false, message: 'Failed to authenticate token.' });
     }else{
       req.decoded = decoded;
-      next();
+      if(req.decoded._doc.authorized){
+        next();
+      }else{
+        return res.status(403).send({
+          success: false,
+          response: {message: 'You\'re not authorized.'}
+        });
+      }
     }
   });
   }else{

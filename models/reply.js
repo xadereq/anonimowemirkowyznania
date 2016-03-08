@@ -9,7 +9,8 @@ var replySchema = new Schema({
     authorized: {type: Boolean, default: false},
     parentID: Number,
     commentID: Number,
-    accepted: {type: Boolean, default: false}
+    accepted: {type: Boolean, default: false},
+    addedBy: String
 });
 
 module.exports = mongoose.model('replies', replySchema);
