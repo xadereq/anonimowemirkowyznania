@@ -6,7 +6,8 @@ var confessionSchema = new Schema({
     embed: String,
     auth: String,
     entryID: Number,
-    accepted: {type: Boolean, default: false}
+    accepted: {type: Boolean, default: false},
+    addedBy: String
 });
 
 module.exports = mongoose.model('confessions', confessionSchema);

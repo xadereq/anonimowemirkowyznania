@@ -9,6 +9,7 @@ block content
       td embed
       td authString
       td parentID
+      td addedBy
       td ACTIONS
       each reply, index in replies
         tr(class=reply.accepted ? 'success' : 'warning')
@@ -20,6 +21,7 @@ block content
           td #{reply.auth}
           td 
             a(href="http://wykop.pl/wpis/#{reply.parentID}", target="_blank") #{reply.parentID}
+          td #{reply.addedBy}
           td
             span.accept(data-action="add", data-id="#{reply._id}", data-endpoint="reply") dodaj
 block script

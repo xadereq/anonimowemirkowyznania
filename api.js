@@ -54,6 +54,7 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       if(err) throw err;
       confession.entryID = response.id;
       confession.accepted = true;
+      confession.addedBy = req.decoded._doc.username;
       confession.save((err)=>{
         if(err) res.send(err);
         res.json({success: true, response: {message: 'Entry added', entryID: response.id}});
@@ -79,6 +80,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
       if(err){console.log(err); return;}
       reply.commentID = response.id;
       reply.accepted = true;
+      reply.addedBy = req.decoded._doc.username;
       reply.save((err)=>{
         if(err) res.send(err);
         res.json({success: true, response: {message: 'Reply added', commentID: response.id}});
