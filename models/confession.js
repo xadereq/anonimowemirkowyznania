@@ -7,7 +7,8 @@ var confessionSchema = new Schema({
     auth: String,
     entryID: Number,
     accepted: {type: Boolean, default: false},
-    addedBy: String
+    addedBy: String,
+    _followers: [{ type: Schema.Types.ObjectId, ref: 'users' }]
 });
 
 module.exports = mongoose.model('confessions', confessionSchema);
