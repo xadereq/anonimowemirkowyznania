@@ -85,7 +85,6 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
       reply.commentID = response.id;
       reply.accepted = true;
       reply.addedBy = req.decoded._doc.username;
-      reply.commentID = response.id;
       reply.save((err)=>{
         if(err) res.send(err);
         res.json({success: true, response: {message: 'Reply added', commentID: response.id}});
