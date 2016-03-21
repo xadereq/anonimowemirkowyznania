@@ -9,21 +9,20 @@ var wykop = new Wykop(config.wykop.key, config.wykop.secret);
 var md5 = require('md5');
 var apiRouter = require('./api.js');
 var adminRouter = require('./admin.js');
-var watchRouter = require('./watch.js');
 var confessionModel = require('./models/confession.js');
 var replyModel = require('./models/reply.js');
 var userModel = require('./models/user.js');
+var wykopController = require('./controllers/wykop.js');
 var crypto = require('crypto');
 
 const _port = 1337;
-const connectURL = 'http://localhost:1337/connect';
+const connectURL = 'http://p4nic.usermd.net:1337/';
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use('/api', apiRouter);
 app.use('/admin', adminRouter);
-app.use('/follow', watchRouter);
 
 app.set('view engine', 'jade');
 
@@ -49,7 +48,6 @@ app.get('/connect', (req, res)=>{
   //req.query.connectData
   var authDetails = JSON.parse(new Buffer(req.query.connectData, 'base64').toString('utf-8'));
   wykop.request('User', 'Login', {post: {accountkey: authDetails.token}}).then(function(response){
-    console.log(response);
     userModel.findOneAndUpdate({username: response.login}, {avatar: response.avatar, userkey: response.userkey}, {upsert: true}, (err, loggedUser)=>{
       if(err) throw err;
       var token = jwt.sign(loggedUser, config.secret, {expiresIn: 1440*60});
@@ -77,7 +75,7 @@ app.post('/reply/:confessionid', (req, res)=>{
       reply.authorized = true;
     }
     reply.auth = crypto.randomBytes(5).toString('hex');
-    reply.parentID = confession.entryID;
+    reply.parentID = confession._id;
     reply.save((err)=>{
       if(err) res.send(err);
         res.render('reply', {success: true, reply: reply, confession: confession});
@@ -85,6 +83,18 @@ app.post('/reply/:confessionid', (req, res)=>{
     }else{
         res.json({success: false, response:{message: 'confession not found'}});
     }
+  });
+});
+app.get('/followers/:confessionid', (req, res)=>{
+  confessionModel.findById(req.params.confessionid, (err, confession)=>{
+    if(err)return res.json({success:false, response:{message: 'no such confession'}});;
+    if(confession){
+    wykopController.getFollowers(confession.entryID, confession.notificationCommentId, (followers)=>{
+      res.send(followers.substr(1));
+    });
+  }else{
+    res.json({success:false, response:{message: 'no such confession'}});
+  }
   });
 });
 app.get('/cotojest', (req, res)=>{
