@@ -7,7 +7,7 @@ var replySchema = new Schema({
     embed: String,
     auth: String,
     authorized: {type: Boolean, default: false},
-    parentID: Number,
+    parentID:  { type: Schema.Types.ObjectId, ref: 'confessions' },
     commentID: Number,
     accepted: {type: Boolean, default: false},
     addedBy: String
