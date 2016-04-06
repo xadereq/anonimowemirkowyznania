@@ -58,19 +58,19 @@ app.get('/connect', (req, res)=>{
 });
 app.get('/reply/:confessionid', (req, res)=>{
   confessionModel.findById(req.params.confessionid, (err, confession)=>{
-  if(err){res.json({success: false, response:{message: 'confession not found'}}); return;}
+  if(err)return res.sendStatus(404);
   res.render('reply', {confession: confession});
   });
 });
 app.post('/reply/:confessionid', (req, res)=>{
   confessionModel.findById(req.params.confessionid, (err, confession)=>{
-    if(err){res.json({success: false, response:{message: 'confession not found'}}); return;}
+    if(err)return res.sendStatus(404);
     if(confession){
     var reply = new replyModel();
     reply.text = req.body.text;
     reply.embed = req.body.embed;
     reply.alias = req.body.alias || "Anon";
-    if(reply.alias == confession.auth){
+    if(reply.alias.trim() == confession.auth){
       reply.alias = "OP";
       reply.authorized = true;
     }
@@ -81,19 +81,23 @@ app.post('/reply/:confessionid', (req, res)=>{
         res.render('reply', {success: true, reply: reply, confession: confession});
     });
     }else{
-        res.json({success: false, response:{message: 'confession not found'}});
+        return res.sendStatus(404);
     }
   });
 });
 app.get('/followers/:confessionid', (req, res)=>{
   confessionModel.findById(req.params.confessionid, (err, confession)=>{
-    if(err)return res.json({success:false, response:{message: 'no such confession'}});;
+    if(err)return res.sendStatus(404);
     if(confession){
     wykopController.getFollowers(confession.entryID, confession.notificationCommentId, (followers)=>{
+      if(followers.length > 1){
       res.send(followers.substr(1));
+      }else{
+        res.json({success:false, response:{message: "Nikt nie obserwuje tego wątku"}});
+      }
     });
   }else{
-    res.json({success:false, response:{message: 'no such confession'}});
+    res.sendStatus(404);
   }
   });
 });

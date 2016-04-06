@@ -20,7 +20,7 @@ block content
            a(href="#{reply.embed}", target="_blank") #{reply.embed}
           td #{reply.auth}
           td 
-            a(href="http://wykop.pl/wpis/#{reply.parentID}", target="_blank") #{reply.parentID}
+            a(href="http://wykop.pl/wpis/#{reply.parentID.entryID}", target="_blank") #{reply.parentID.entryID}
           td #{reply.addedBy}
           td
             button.btn.btn-large.btn-success.accept(data-action="add", data-id="#{reply._id}", data-endpoint="reply") Dodaj

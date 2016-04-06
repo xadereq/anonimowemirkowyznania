@@ -50,7 +50,7 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
       if(err) throw err;
       confession.entryID = response.id;
-      wykop.request('Entries', 'AddComment', {params: [response.id], post: {body: `Zaplusuj ten komentarz, aby otrzymywać powiadomienia o odpowiedziach w tym wątku. [Kliknij tutaj, jeśli chcesz skopiować listę obserwujących](http://p4nic.usermd.net/follow/${confession._id})`}}, (err, notificationComment)=>{
+      wykop.request('Entries', 'AddComment', {params: [response.id], post: {body: `Zaplusuj ten komentarz, aby otrzymywać powiadomienia o odpowiedziach w tym wątku. [Kliknij tutaj, jeśli chcesz skopiować listę obserwujących](http://p4nic.usermd.net/followers/${confession._id})`}}, (err, notificationComment)=>{
         if(err)return console.log(err);
         confession.notificationCommentId = notificationComment.id;
         confession.save();
@@ -83,7 +83,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
     }
     var entryBody = `**${reply.alias}**: ${reply.text}\n\nTo jest anonimowy komentarz${authorized}`;
     wykopController.getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (followers)=>{
-      if(followers.length)entryBody+=`\nWołam obserwujących: \n${followers}`;
+      if(followers.length > 1)entryBody+=`\nWołam obserwujących: \n${followers}`;
       wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
         if(err){console.log(err); return;}
         reply.commentID = response.id;
