@@ -70,7 +70,7 @@ adminRouter.get('/confessions', (req, res)=>{
   });
 });
 adminRouter.get('/replies', (req, res)=>{
-  replyModel.find().sort({_id: -1}).limit(100).exec((err, replies)=>{
+  replyModel.find().populate('parentID').sort({_id: -1}).limit(100).exec((err, replies)=>{
     if(err) res.send(err);
     res.render('./admin/replies.jade', {user:req.decoded._doc, replies: replies});
   });
