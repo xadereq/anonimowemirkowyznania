@@ -10,7 +10,7 @@ block content
    .add-confession
      h1 Dodaj wyznanie
     form#confession(action="/", method="post")
-    textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoje wyznanie")
+    textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoje wyznanie" rows=10)
     br
     input.form-control(type="text", name="embed", placeholder="URL do obrazka", maxlength=3000)
     button.btn.btn-large.btn-success(type="submit") Wyślij

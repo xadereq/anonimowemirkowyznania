@@ -10,7 +10,7 @@ block content
     h1 Dodaj komentarz do 
       a(href='http://wykop.pl/wpis/#{confession.entryID}', target='_blank') tego wyznania
     form#reply(method="post")
-      textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoj komentarz")
+      textarea.form-control(type="text", name="text", placeholder="Wpisz tutaj swoj komentarz" rows=10)
       br
       input.form-control(type="text", name="alias", placeholder="Pseudonim (wpisz kod potwierdzający, a zostaniesz oznaczony jako OP)" maxlength=32)
       br
