@@ -12,7 +12,14 @@ block content
       td addedBy
       td ACTIONS
       each reply, index in replies
-        tr(class=reply.accepted ? 'success' : 'warning')
+        case reply.status
+          when -1
+            -var rowClass = 'danger'
+          when 1
+            -var rowClass = 'success'
+          default
+            -var rowClass = 'warning'
+        tr(class=rowClass)
           td #{reply._id}
           td #{reply.alias}
           td #{reply.text}
@@ -23,7 +30,8 @@ block content
             a(href="http://wykop.pl/wpis/#{reply.parentID.entryID}", target="_blank") #{reply.parentID.entryID}
           td #{reply.addedBy}
           td
-            button.btn.btn-large.btn-success.accept(data-action="add", data-id="#{reply._id}", data-endpoint="reply") Dodaj
+            button.btn.btn-success.actionButton&attributes({'data-action':'add', 'data-id':reply.id, 'data-endpoint':'reply'}) Dodaj
+            span.label.label-small.label-danger&attributes({'data-action':'danger', 'data-id':reply.id, 'data-endpoint':'reply'}) Nieodpowiednia
 block script
   script(type="text/javascript")
     include ./scripts/panel.js
