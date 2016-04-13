@@ -46,21 +46,35 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       res.json({success: false, response: {message: 'It\'s already added', entryID: confession.entryID}});
       return;
     }
+    if(confession.status == -1){
+      res.json({success: false, response: {message: 'It\'s marked as dangerous, unmark first'}});
+      return;
+    }
     var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
-      if(err){res.json({success: false, response: {message: err}}); throw err;}
+      if(err){res.json({success: false, response: {message: err.message+'restartuje aplikacje wciśnij f5'}}); throw err;}
       confession.entryID = response.id;
       wykop.request('Entries', 'AddComment', {params: [response.id], post: {body: `Zaplusuj ten komentarz, aby otrzymywać powiadomienia o odpowiedziach w tym wątku. [Kliknij tutaj, jeśli chcesz skopiować listę obserwujących](http://p4nic.usermd.net/followers/${confession._id})`}}, (err, notificationComment)=>{
         if(err)return console.log(err);
         confession.notificationCommentId = notificationComment.id;
         confession.save();
       });
-      confession.accepted = true;
+      confession.status = 1;
       confession.addedBy = req.decoded._doc.username;
       confession.save((err)=>{
         if(err) res.json({success: false, response: {message: err}});;
         res.json({success: true, response: {message: 'Entry added', entryID: response.id}});
       });
+    });
+  });
+});
+apiRouter.route('/confession/danger/:confession_id').get((req, res)=>{
+  confessionModel.findById(req.params.confession_id, (err, confession)=>{
+    if(err) return console.log(err);
+    confession.status==-1?confession.status=0:confession.status=-1;
+    confession.save((err)=>{
+      if(err) res.json({success: false, response: {message: err}});
+      res.json({success: true, response: {message: 'Zaaktualizowano status'}});
     });
   });
 });
@@ -77,6 +91,10 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
       res.json({success: false, response: {message: 'It\'s already added', commentID: reply.commentID}});
       return;
     }
+    if(reply.status == -1){
+      res.json({success: false, response: {message: 'It\'s marked as dangerous, unmark first'}});
+      return;
+    }
     var authorized = '';
     if(reply.authorized){
       authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
@@ -85,15 +103,26 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
     wykopController.getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (followers)=>{
       if(followers.length > 1)entryBody+=`\nWołam obserwujących: \n${followers}`;
       wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
-        if(err){res.json({success: false, response: {message: err}}); return;}
+        if(err){res.json({success: false, response: {message: err.message}}); return;}
         reply.commentID = response.id;
-        reply.accepted = true;
+        reply.status = 1;
         reply.addedBy = req.decoded._doc.username;
         reply.save((err)=>{
           if(err) res.json({success: false, response: {message: err}});
           res.json({success: true, response: {message: 'Reply added', commentID: response.id}});
         });
       });
+    });
+  });
+});
+apiRouter.route('/reply/danger/:reply_id').get((req, res)=>{
+  replyModel.findById(req.params.reply_id).populate('parentID').exec((err, reply)=>{
+    if(err) return console.log(err);
+    var message = '';
+    reply.status==-1?reply.status=0:reply.status=-1;
+    reply.save((err)=>{
+      if(err) res.json({success: false, response: {message: err}});
+      res.json({success: true, response: {message: 'Status zaaktualizowany'}});
     });
   });
 });

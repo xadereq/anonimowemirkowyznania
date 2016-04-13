@@ -9,7 +9,7 @@ var replySchema = new Schema({
     authorized: {type: Boolean, default: false},
     parentID:  { type: Schema.Types.ObjectId, ref: 'confessions' },
     commentID: Number,
-    accepted: {type: Boolean, default: false},
+    status: {type: Number, default: 0},
     addedBy: String
 });
 

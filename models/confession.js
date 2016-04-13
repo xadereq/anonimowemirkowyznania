@@ -6,7 +6,7 @@ var confessionSchema = new Schema({
     embed: String,
     auth: String,
     entryID: Number,
-    accepted: {type: Boolean, default: false},
+    status: {type: Number, default: 0}
     addedBy: String,
     notificationCommentId: Number,
 });
