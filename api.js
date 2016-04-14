@@ -50,9 +50,9 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       res.json({success: false, response: {message: 'It\'s marked as dangerous, unmark first'}});
       return;
     }
-    var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
+    var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) Zaakceptował: ${req.decoded._doc.username} \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
-      if(err){res.json({success: false, response: {message: err.message+'restartuje aplikacje wciśnij f5'}}); throw err;}
+      if(err){res.json({success: false, response: {message: JSON.stringify(err)}}); throw err;}
       confession.entryID = response.id;
       wykop.request('Entries', 'AddComment', {params: [response.id], post: {body: `Zaplusuj ten komentarz, aby otrzymywać powiadomienia o odpowiedziach w tym wątku. [Kliknij tutaj, jeśli chcesz skopiować listę obserwujących](http://p4nic.usermd.net/followers/${confession._id})`}}, (err, notificationComment)=>{
         if(err)return console.log(err);
@@ -99,7 +99,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
     if(reply.authorized){
       authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
     }
-    var entryBody = `**${reply.alias}**: ${reply.text}\n\nTo jest anonimowy komentarz${authorized}`;
+    var entryBody = `**${reply.alias}**: ${reply.text}\n\nTo jest anonimowy komentarz.${authorized}\nZaakceptował: ${req.decoded._doc.username}`;
     wykopController.getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (followers)=>{
       if(followers.length > 1)entryBody+=`\nWołam obserwujących: \n${followers}`;
       wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{

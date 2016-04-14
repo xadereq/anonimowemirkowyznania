@@ -28,7 +28,7 @@ block content
           td #{confession.addedBy}
           td
             button.btn.btn-success.actionButton&attributes({'data-action':'add', 'data-id':confession.id, 'data-endpoint':'confession'}) Dodaj
-            span.label.label-small.label-danger&attributes({'data-action':'danger', 'data-id':confession.id, 'data-endpoint':'confession'}) DANGER
+            span.label.label-small.label-danger.actionButton&attributes({'data-action':'danger', 'data-id':confession.id, 'data-endpoint':'confession'}) DANGER
 block script
   script(type="text/javascript")
     include ./scripts/panel.js
