@@ -10,7 +10,9 @@ var replySchema = new Schema({
     parentID:  { type: Schema.Types.ObjectId, ref: 'confessions' },
     commentID: Number,
     status: {type: Number, default: 0},
-    addedBy: String
+    accepted: {type: Boolean, default: false},
+    addedBy: String,
+    IPAdress: String
 });
 
 module.exports = mongoose.model('replies', replySchema);

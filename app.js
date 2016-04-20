@@ -17,10 +17,11 @@ var crypto = require('crypto');
 
 const _port = 1337;
 const connectURL = 'http://p4nic.usermd.net:1337/';
+app.enable('trust proxy');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
 app.use('/api', apiRouter);
 app.use('/admin', adminRouter);
 
@@ -29,9 +30,13 @@ app.set('view engine', 'jade');
 app.get('/', (req, res)=>{
   res.render('index');
 });
+app.get('/ip', (req, res)=>{
+  res.json([req.ip, req.ips]);
+});
 app.post('/', (req, res)=>{
   var confession = new confessionModel();
   confession.text = req.body.text;
+  confession.IPAdress = req.ip;
   confession.embed = req.body.embed;
   confession.auth = crypto.randomBytes(5).toString('hex');
   confession.save((err)=>{
@@ -68,6 +73,7 @@ app.post('/reply/:confessionid', (req, res)=>{
     if(confession){
     var reply = new replyModel();
     reply.text = req.body.text;
+    reply.IPAdress = req.ip;
     reply.embed = req.body.embed;
     reply.alias = req.body.alias || "Anon";
     if(reply.alias.trim() == confession.auth){

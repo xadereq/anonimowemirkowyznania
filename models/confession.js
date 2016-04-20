@@ -7,8 +7,10 @@ var confessionSchema = new Schema({
     auth: String,
     entryID: Number,
     status: {type: Number, default: 0},
+    accepted: {type: Boolean, default: false},
     addedBy: String,
     notificationCommentId: Number,
+    IPAdress: String
 });
 
 module.exports = mongoose.model('confessions', confessionSchema);
