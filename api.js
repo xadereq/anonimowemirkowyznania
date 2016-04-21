@@ -50,7 +50,7 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       res.json({success: false, response: {message: 'It\'s marked as dangerous, unmark first'}});
       return;
     }
-    var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](http://p4nic.usermd.net/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( http://p4nic.usermd.net ) Zaakceptował: ${req.decoded._doc.username} \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
+    var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username} \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
       if(err){res.json({success: false, response: {message: JSON.stringify(err)}}); throw err;}
       confession.entryID = response.id;

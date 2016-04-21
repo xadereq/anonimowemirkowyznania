@@ -1,4 +1,4 @@
 # anonimowemirkowyznania
-[demo](http://p4nic.usermd.net)
+[demo](mirkowyznania.eu)
 
 [#anonimowemirkowyznania@wykop.pl](www.wykop.pl/tag/anonimowemirkowyznania)
