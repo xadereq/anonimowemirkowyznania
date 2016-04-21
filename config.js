@@ -1,13 +1,11 @@
 module.exports = {
   //http://www.wykop.pl/dla-programistow/twoje-aplikacje/
   wykop: {
-    key: '',
-    secret: '',
-    connection: ''
+    key: '', //apiKey
+    secret: '', //app secret
+    connection: '' //connection key
   },
-  mongoURL: '',
-  //Authorization header: Basic base64(username:password)
-  //current filip:abc
-  authString: 'Basic ZmlsaXA6YWJj=',
-  secret: 'secretkey'
+  siteURL: '', //site url
+  mongoURL: '', //mongo connection URL
+  secret: '' //website's secret key
 }

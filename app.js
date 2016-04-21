@@ -16,7 +16,6 @@ var wykopController = require('./controllers/wykop.js');
 var crypto = require('crypto');
 
 const _port = 1337;
-const connectURL = 'http://p4nic.usermd.net:1337/';
 app.enable('trust proxy');
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,8 +44,8 @@ app.post('/', (req, res)=>{
   });
 });
 app.get('/login', (req, res)=>{
-  var redirectURL = encodeURIComponent(new Buffer(connectURL).toString('base64'));
-  var secureKey = md5(config.wykop.secret+connectURL);
+  var redirectURL = encodeURIComponent(new Buffer(config.siteURL).toString('base64'));
+  var secureKey = md5(config.wykop.secret+config.siteURL);
   res.redirect(`http://a.wykop.pl/user/connect/appkey,${config.wykop.key},userkey,,secure,${secureKey},redirect,${redirectURL}`);
 });
 app.get('/connect', (req, res)=>{
