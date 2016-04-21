@@ -1,4 +1,4 @@
 # anonimowemirkowyznania
 [demo](mirkowyznania.eu)
 
-[#anonimowemirkowyznania@wykop.pl](www.wykop.pl/tag/anonimowemirkowyznania)
+[#anonimowemirkowyznania@wykop.pl](http://wykop.pl/tag/anonimowemirkowyznania)
