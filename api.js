@@ -103,7 +103,7 @@ apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{
     wykopController.getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (followers)=>{
       if(followers.length > 1)entryBody+=`\nWołam obserwujących: \n${followers}`;
       wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
-        if(err){res.json({success: false, response: {message: err.message}}); return;}
+        if(err){res.json({success: false, response: {message: JSON.stringify(err)}}); return;}
         reply.commentID = response.id;
         reply.status = 1;
         reply.addedBy = req.decoded._doc.username;
