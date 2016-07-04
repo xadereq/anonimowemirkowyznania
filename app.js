@@ -9,6 +9,7 @@ var wykop = new Wykop(config.wykop.key, config.wykop.secret);
 var md5 = require('md5');
 var apiRouter = require('./api.js');
 var adminRouter = require('./admin.js');
+var conversationRouter = require('./conversation.js');
 var confessionModel = require('./models/confession.js');
 var replyModel = require('./models/reply.js');
 var userModel = require('./models/user.js');
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use(express.static('public'));
 app.use('/api', apiRouter);
 app.use('/admin', adminRouter);
+app.use('/conversation', conversationRouter);
 
 app.set('view engine', 'jade');
 
@@ -45,7 +47,7 @@ app.post('/', (req, res)=>{
       confession.actions.push(actionId);
       confession.save((err)=>{
         if(err) res.send(err);
-          res.render('index', {success: true, confession: confession});
+          res.redirect(`confession/${confession._id}/${confession.auth}`);
       });
   });
 });
@@ -65,6 +67,18 @@ app.get('/connect', (req, res)=>{
       res.redirect('/');
     });
   });
+});
+/*tutaj trzeba wyswietlic ogolne informacje o wyznaniu akcje i konwersacje*/
+app.get('/confession/:confessionid/:auth', (req, res)=>{
+  if(!req.params.confessionid || !req.params.auth){
+    return res.sendStatus(400);
+  }else{
+    confessionModel.findOne({_id: req.params.confessionid, auth: req.params.auth}).populate({path:'actions', options:{sort: {_id: -1}}, populate: {path: 'user', select: 'username'}}).exec((err, confession)=>{
+      if(err) return res.send(err);
+      if(!confession)return res.sendStatus(404);
+      res.render('confession', {confession: confession});
+    });
+  }
 });
 app.get('/reply/:confessionid?', (req, res)=>{
   if(!req.params.confessionid){

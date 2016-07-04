@@ -1,0 +1,23 @@
+extends ./base.jade
+block content
+  .col-lg-8
+    .panel-body
+    if conversation
+        ul.chat
+          each message, index in conversation.messages
+            -var nickname = (message.OP ? 'OP' : 'Uzytkownik mikrobloga')
+            -var color = (message.OP ? 'FA6F57' : '55C1E7')
+            li.left.clearfix.list-unstyled
+              span.chat-img.pull-left
+                img.img-circle(src="http://placehold.it/50/#{color}/fff&text=#{nickname}")
+              .chat-body.clearfix
+                .header
+                  strong.primary-font #{nickname}
+                  small.text-muted.pull-right #{message.time}
+                p
+                |#{message.text}
+              hr
+      form(method="post")
+        input.form-control(type="text", name="text", placeholder="Wpisz tutaj swoja wiadomosc")
+        button.btn.btn-large.btn-success(type="submit") Wyślij
+        

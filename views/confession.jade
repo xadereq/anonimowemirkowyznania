@@ -1,0 +1,28 @@
+extends ./base.jade
+block content
+  .alert.alert-success
+    strong Dodano!
+    | Wyznanie pojawi się na mikroblogu po zaakceptowaniu
+    br
+    | Kod autoryzacji: <strong>#{confession.auth}</strong> (dzięki niemu będziesz mogł odpowiadać w swoim wpisie jako OP).
+    | Pod tym linkiem mozesz przeglądać co dzieje się z twoim wyzaniem i jakie akcje zostały podjęte, mozesz takze czytac wiadomosci prywatne, jesli jakies się pojawią. 
+    b Pamiętaj kod jest tajny i jeśli dostanie się w ręce osob trzecich uzyskaja dostep do twoich prywatnych wiadomosci i beda mogly odpowiadac w twoim imieniu
+  .panel.panel-default
+    .panel-heading
+      |Wpis
+    .panel-body
+      |#{confession.text}
+      img(src="#{confession.embed}").img-responsive
+  h3 Akcje
+  .list-group
+    each action, index in confession.actions
+      a.list-group-item
+        p.list-group-item-text
+        |#{action.action} #{action.time}
+if confession.conversations
+  h3 Konwersacje
+  ul.list-group
+    each conversation, index in confession.conversations
+        li.list-group-item
+          span.badge 34
+          a(href="../../conversation/#{conversation}/#{confession.auth}") #{conversation}
