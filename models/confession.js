@@ -10,7 +10,8 @@ var confessionSchema = new Schema({
     addedBy: String,
     notificationCommentId: Number,
     IPAdress: String,
-    actions: [{ type: Schema.Types.ObjectId, ref: 'actions' }]
+    actions: [{type: Schema.Types.ObjectId, ref: 'actions'}],
+    conversations: [{type: Schema.Types.ObjectId, ref: 'conversations'}]
 });
 
 module.exports = mongoose.model('confessions', confessionSchema);

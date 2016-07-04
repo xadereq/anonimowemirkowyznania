@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var actionSchema = new Schema({
-  user:  { type: Schema.Types.ObjectId, ref: 'users' },
+  user:  {type: Schema.Types.ObjectId, ref: 'users'},
   action: String,
   type: Number,
   time: Date
