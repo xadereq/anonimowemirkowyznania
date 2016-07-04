@@ -144,6 +144,9 @@ app.get('/followers/:confessionid', (req, res)=>{
 app.get('/cotojest', (req, res)=>{
   res.render('cotojest');
 });
+app.get('/dotacje', (req, res)=>{
+  res.render('dotacje');
+});
 app.listen(_port, ()=>{
   console.log('listening on port '+_port);
 });
