@@ -15,6 +15,7 @@ var replyModel = require('./models/reply.js');
 var userModel = require('./models/user.js');
 var wykopController = require('./controllers/wykop.js');
 var actionController = require('./controllers/actions.js');
+var aliasGenerator = require('./controllers/aliases.js');
 var crypto = require('crypto');
 
 const _port = 1337;
@@ -107,7 +108,7 @@ app.post('/reply/:confessionid', (req, res)=>{
     reply.text = req.body.text;
     reply.IPAdress = req.ip;
     reply.embed = req.body.embed;
-    reply.alias = req.body.alias || "Anon";
+    reply.alias = req.body.alias || aliasGenerator(Math.random() >= 0.5);
     if(reply.alias.trim() == confession.auth){
       reply.alias = "OP";
       reply.authorized = true;
