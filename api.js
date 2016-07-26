@@ -44,9 +44,9 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
       if(err){res.json({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
       if(err.error.code==11){
-        console.log('klucz niewazny');
         wykop.relogin();
       }
+      return;
       }
       confession.entryID = response.id;
       wykop.request('Entries', 'AddComment', {params: [response.id], post: {body: `Zaplusuj ten komentarz, aby otrzymywać powiadomienia o odpowiedziach w tym wątku. [Kliknij tutaj, jeśli chcesz skopiować listę obserwujących](${config.siteURL}/followers/${confession._id})`}}, (err, notificationComment)=>{
