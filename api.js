@@ -42,11 +42,12 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
     }
     var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username} \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
     wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
-      if(err){res.json({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
-      if(err.error.code==11){
-        wykop.relogin();
-      }
-      return;
+      if(err){
+        if(err.error.code==11){
+          wykop.relogin();
+        }
+        res.json({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
+        return;
       }
       confession.entryID = response.id;
       wykop.request('Entries', 'AddComment', {params: [response.id], post: {body: `Zaplusuj ten komentarz, aby otrzymywać powiadomienia o odpowiedziach w tym wątku. [Kliknij tutaj, jeśli chcesz skopiować listę obserwujących](${config.siteURL}/followers/${confession._id})`}}, (err, notificationComment)=>{
