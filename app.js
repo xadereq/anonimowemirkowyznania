@@ -15,6 +15,7 @@ var replyModel = require('./models/reply.js');
 var userModel = require('./models/user.js');
 var wykopController = require('./controllers/wykop.js');
 var actionController = require('./controllers/actions.js');
+var tagController = require('./controllers/tags.js');
 var aliasGenerator = require('./controllers/aliases.js');
 var crypto = require('crypto');
 
@@ -42,6 +43,7 @@ app.post('/', (req, res)=>{
   confession.text = req.body.text;
   confession.IPAdress = req.ip;
   confession.embed = req.body.embed;
+  confession.tags = tagController.getTags(req.body.text);
   confession.auth = crypto.randomBytes(5).toString('hex');
   actionController(null, 0, function(err, actionId){
       if(err)return;

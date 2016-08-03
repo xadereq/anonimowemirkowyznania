@@ -1,6 +1,9 @@
 $('.actionButton').click(function(){
   var parent = $(this).parent().parent();
   var endpoint = `/api/${$(this).data("object")}/${$(this).data("action")}/${$(this).data("id")}`;
+  if($(this).data("action")=='tags'){
+    endpoint+=`/${$(this).data("tag")}`
+  }
   $.ajax({
       type: "GET",
       url: endpoint

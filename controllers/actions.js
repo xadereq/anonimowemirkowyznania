@@ -8,14 +8,15 @@ var actionTypes = {
   5: 'Usunięto z wykopu',
   6: 'Tag #anonimowemirkowyznania usunięty',
   7: 'Tag #anonimowemirkowyznania dodany',
-  8: 'Zaakceptowano nową odpowiedź'
+  8: 'Zaakceptowano nową odpowiedź',
+  9: 'Zmodyfikowano tagi wpisu',
 }
 function createAction(userId, actionType, cb){
   var action = new actionModel();
   action.action = actionTypes[actionType];
   action.user = userId;
   action.time = new Date();
-  action.type = actionType; //dupliacted data!
+  action.type = actionType;
   action.save((err, action)=>{
     cb(err, action._id);
   });

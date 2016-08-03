@@ -5,6 +5,7 @@ var confessionSchema = new Schema({
     text: String,
     embed: String,
     auth: String,
+    tags: [],
     entryID: Number,
     status: {type: Number, default: 0},
     addedBy: String,

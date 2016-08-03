@@ -12,6 +12,12 @@ block content
     .panel-body
       |#{confession.text}
       img(src="#{confession.embed}").img-responsive
+  h4 tagi
+  each tag, index in confession.tags
+    -var klass = (tag[1] === 1 ? 'ok text-success' : 'remove text-danger')
+    a.actionButton&attributes({'data-action':'tags', 'data-id':confession.id, 'data-object':'confession', 'data-tag':tag[0].slice(1)}) #{tag[0]}
+    span(class='glyphicon glyphicon-'+klass)
+    br
   .list-group
     each action, index in confession.actions
       a.list-group-item

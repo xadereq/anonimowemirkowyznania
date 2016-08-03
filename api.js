@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var wykop = require('./wykop.js');
 var wykopController = require('./controllers/wykop.js');
 var actionController = require('./controllers/actions.js');
+var tagController = require('./controllers/tags.js');
 var auth = require('./controllers/authorization.js');
 var config = require('./config.js');
 var confessionModel = require('./models/confession.js');
@@ -40,8 +41,8 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       res.json({success: false, response: {message: 'It\'s marked as dangerous, unmark first', status: 'danger'}});
       return;
     }
-    var entryBody = `#AnonimoweMirkoWyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username} \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
-    wykop.request('Entries', 'Add', {post: {body: entryBody, embed: confession.embed}}, (err, response)=>{
+    var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username} \n **Po co to?** \n Dzięki temu narzędziu możesz dodać wpis pozostając anonimowym.`;
+    wykop.request('Entries', 'Add', {post: {body: tagController.trimTags(entryBody, confession.tags), embed: confession.embed}}, (err, response)=>{
       if(err){
         //{"error":{"code":11,"message":"Niepoprawny klucz użytkownika"}}
         res.json({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
@@ -78,15 +79,28 @@ apiRouter.route('/confession/danger/:confession_id').get((req, res)=>{
       if(err)return err;
       confession.actions.push(actionId);
       confession.save((err)=>{
-        if(err) res.json({success: false, response: {message: err}});
+        if(err) return res.json({success: false, response: {message: err}});
         res.json({success: true, response: {message: 'Zaaktualizowano status', status: status}});
       });
     });
   });
 });
+apiRouter.route('/confession/tags/:confession_id/:tag').get((req, res)=>{
+  //there's probably more clean way to do this.
+  confessionModel.findById(req.params.confession_id, (err, confession)=>{
+    if(err)return res.send(err);
+    actionController(req.decoded._doc._id, 9, function(err, actionId){
+    if(err)return err;
+    confessionModel.update({_id: req.params.confession_id}, {$set: {tags: tagController.prepareArray(confession.tags, req.params.tag)}, $push:{actions: actionId}}, (err)=>{
+      if(err)return res.json({success: false, response: {message: err}});
+      res.json({success: true, response: {message: 'Tagi zaaktualizowano'}});
+    });
+    });
+  });
+});
 apiRouter.route('/confession/delete/:confession_id').get((req, res)=>{
   confessionModel.findById(req.params.confession_id, (err, confession)=>{
-    if(err) return res.json(err);
+    if(err) return res.send(err);
     wykopController.deleteEntry(confession.entryID, (err, result)=>{
       if(err) return res.json({success: false, response: {message: err.error.message}});
         actionController(req.decoded._doc._id, 5, function(err, actionId){
@@ -94,7 +108,7 @@ apiRouter.route('/confession/delete/:confession_id').get((req, res)=>{
           confession.actions.push(actionId);
           confession.status = -1;
           confession.save((err)=>{
-            if(err) res.json({success: false, response: {message: err}});
+            if(err)return res.json({success: false, response: {message: err}});
             res.json({success: true, response: {message: `Usunięto wpis ID: ${result.id}`}});
           });
         });
