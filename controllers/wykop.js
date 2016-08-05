@@ -48,9 +48,15 @@ wykopController = {
         if(err) return cb(err);
         wykop.request('Entries', 'Delete', {params: [entryID]}, (err, response)=>{
           if(err) return cb(err);
-          return cb(null, response);
+          return cb(null, response, entry);
         });
       });
+    });
+  },
+  sendPrivateMessage: function(recipient, body, cb){
+    wykop.request('PM', 'SendMessage', {params: [recipient], post: {body}}, (err, response)=>{
+      if(err)return cb(err);
+      cb(null, response);
     });
   }
 }

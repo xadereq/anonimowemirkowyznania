@@ -16,7 +16,6 @@ const tagController = {
      for(var i in array){
        if(array[i][0]=='#'+tag){
          array[i][1]?array[i][1]=0:array[i][1]=1;
-         break;
        }
      }
      return array;

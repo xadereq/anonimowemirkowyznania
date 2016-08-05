@@ -101,7 +101,7 @@ apiRouter.route('/confession/tags/:confession_id/:tag').get((req, res)=>{
 apiRouter.route('/confession/delete/:confession_id').get((req, res)=>{
   confessionModel.findById(req.params.confession_id, (err, confession)=>{
     if(err) return res.send(err);
-    wykopController.deleteEntry(confession.entryID, (err, result)=>{
+    wykopController.deleteEntry(confession.entryID, (err, result, deletedEntry)=>{
       if(err) return res.json({success: false, response: {message: err.error.message}});
         actionController(req.decoded._doc._id, 5, function(err, actionId){
           if(err)return err;
@@ -110,6 +110,9 @@ apiRouter.route('/confession/delete/:confession_id').get((req, res)=>{
           confession.save((err)=>{
             if(err)return res.json({success: false, response: {message: err}});
             res.json({success: true, response: {message: `Usunięto wpis ID: ${result.id}`}});
+            wykopController.sendPrivateMessage('sokytsinolop', `${req.decoded._doc.username} usunął wpis \n ${JSON.stringify(deletedEntry)}`, (err,res)=>{
+              console.log(err, res);
+            });
           });
         });
     });
