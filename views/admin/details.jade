@@ -28,6 +28,8 @@ block content
           | przez 
           em #{action.user.username} 
         | #{action.time}
+  |dodane z tego ip
+  |#{confession.addedFromSameIP}
 block script
   script(type="text/javascript")
     include ./scripts/panel.js
