@@ -17,6 +17,7 @@ var wykopController = require('./controllers/wykop.js');
 var actionController = require('./controllers/actions.js');
 var tagController = require('./controllers/tags.js');
 var aliasGenerator = require('./controllers/aliases.js');
+var surveyController = require('./controllers/survey.js');
 var crypto = require('crypto');
 
 const _port = 1337;
@@ -35,23 +36,25 @@ app.set('view engine', 'jade');
 app.get('/', (req, res)=>{
   res.render('index');
 });
-app.get('/ip', (req, res)=>{
-  res.json([req.ip, req.ips]);
-});
 app.post('/', (req, res)=>{
   var confession = new confessionModel();
+  if(req.body.survey){
+    req.body.survey.answers = req.body.survey.answers.filter((e)=>{return e})
+    var validationResult = surveyController.validateSurvey(req.body.survey);
+    if(validationResult.success == false)return res.json(validationResult.response.message);
+  }
   confession.text = req.body.text;
   confession.IPAdress = req.ip;
   confession.embed = req.body.embed;
   confession.tags = tagController.getTags(req.body.text);
   confession.auth = crypto.randomBytes(5).toString('hex');
-  actionController(null, 0, function(err, actionId){
-      if(err)return;
-      confession.actions.push(actionId);
-      confession.save((err)=>{
-        if(err) res.send(err);
-          res.redirect(`confession/${confession._id}/${confession.auth}`);
-      });
+  actionController(confession, null, 0);
+  confession.save((err)=>{
+    if(err) return res.send(err);
+    if(req.body.survey){
+      surveyController.saveSurvey(confession, req.body.survey);
+    }
+    res.redirect(`confession/${confession._id}/${confession.auth}`);
   });
 });
 app.get('/login', (req, res)=>{
@@ -76,7 +79,7 @@ app.get('/confession/:confessionid/:auth', (req, res)=>{
   if(!req.params.confessionid || !req.params.auth){
     return res.sendStatus(400);
   }else{
-    confessionModel.findOne({_id: req.params.confessionid, auth: req.params.auth}).populate({path:'actions', options:{sort: {_id: -1}}, populate: {path: 'user', select: 'username'}}).exec((err, confession)=>{
+    confessionModel.findOne({_id: req.params.confessionid, auth: req.params.auth}).populate([{path:'actions', options:{sort: {_id: -1}}, populate: {path: 'user', select: 'username'}}, {path:'survey'}]).exec((err, confession)=>{
       if(err) return res.send(err);
       if(!confession)return res.sendStatus(404);
       res.render('confession', {confession: confession});
@@ -101,11 +104,7 @@ app.post('/reply/:confessionid', (req, res)=>{
   confessionModel.findById(req.params.confessionid, (err, confession)=>{
     if(err)return res.sendStatus(404);
     if(confession){
-    actionController(null, 4, function(err, actionId){
-        if(err)return;
-        confession.actions.push(actionId);
-        confession.save();
-    });
+    actionController(confession, null, 4);
     var reply = new replyModel();
     reply.text = req.body.text;
     reply.IPAdress = req.ip;
@@ -146,9 +145,6 @@ app.get('/followers/:confessionid', (req, res)=>{
 });
 app.get('/cotojest', (req, res)=>{
   res.render('cotojest');
-});
-app.get('/dotacje', (req, res)=>{
-  res.render('dotacje');
 });
 app.listen(_port, ()=>{
   console.log('listening on port '+_port);

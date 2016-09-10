@@ -39,13 +39,15 @@ adminRouter.get('/', (req, res)=>{
   res.redirect('/admin/confessions');
 });
 adminRouter.get('/details/:confession_id', (req, res)=>{
-  confessionModel.findById(req.params.confession_id).populate({path:'actions', options:{sort: {_id: -1}}, populate: {path: 'user', select: 'username'}}).exec((err, confession)=>{
+  confessionModel.findById(req.params.confession_id).populate([{path:'actions', options:{sort: {_id: -1}}, populate: {path: 'user', select: 'username'}}, {path:'survey'}]).exec((err, confession)=>{
     if(err) return res.send(err);
     res.render('./admin/details.jade', {user: req.decoded._doc, confession});
   });
 });
-adminRouter.get('/confessions', (req, res)=>{
-  confessionModel.find().sort({_id: -1}).limit(100).exec((err, confessions)=>{
+adminRouter.get('/confessions/:filter?', (req, res)=>{
+  var search = {};
+  req.params.filter?search = {status: req.params.filter}:search = {};
+  confessionModel.find(search).sort({_id: -1}).limit(100).exec((err, confessions)=>{
     if(err) res.send(err);
     res.render('./admin/confessions.jade', {user: req.decoded._doc, confessions: confessions});
   });

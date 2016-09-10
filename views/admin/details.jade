@@ -12,6 +12,12 @@ block content
     .panel-body
       |#{confession.text}
       img(src="#{confession.embed}").img-responsive
+  if confession.survey
+    h4 Ankieta
+    |Pytanie: #{confession.survey.question}
+    ul
+      each answer, i in confession.survey.answers
+        li #{answer}
   h4 tagi
   each tag, index in confession.tags
     -var klass = (tag[1] === 1 ? 'ok text-success' : 'remove text-danger')

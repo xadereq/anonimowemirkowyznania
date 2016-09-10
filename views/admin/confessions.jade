@@ -20,6 +20,9 @@ block content
         tr(class=rowClass)
           td 
            a(href="details/#{confession._id}") #{confession._id}
+           if confession.survey
+            br
+            span.glyphicon.glyphicon-info-sign
           td #{confession.text}
           td
            a(href="#{confession.embed}", target="_blank") #{confession.embed}

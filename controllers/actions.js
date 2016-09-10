@@ -6,19 +6,20 @@ var actionTypes = {
   3: 'Oznaczono jako treść bezpieczna',
   4: 'Dodano odpowiedź',
   5: 'Usunięto z wykopu',
-  6: 'Tag #anonimowemirkowyznania usunięty',
-  7: 'Tag #anonimowemirkowyznania dodany',
+  6: 'Dodano komentarz obsługujący powiadomienia o nowych odpowiedziach',
+  7: 'DEPRECATED',
   8: 'Zaakceptowano nową odpowiedź',
   9: 'Zmodyfikowano tagi wpisu',
 }
-function createAction(userId, actionType, cb){
+function createAction(confession, userId, actionType){
   var action = new actionModel();
   action.action = actionTypes[actionType];
   action.user = userId;
   action.time = new Date();
   action.type = actionType;
   action.save((err, action)=>{
-    cb(err, action._id);
+    confession.actions.push(action._id);
+    confession.save();
   });
 }
 module.exports = createAction;
