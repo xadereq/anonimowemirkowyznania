@@ -41,7 +41,9 @@ app.post('/', (req, res)=>{
   if(req.body.survey.question){
     req.body.survey.answers = req.body.survey.answers.filter((e)=>{return e})
     var validationResult = surveyController.validateSurvey(req.body.survey);
-    if(validationResult.success == false)return res.json(validationResult.response.message);
+    if(validationResult.success == false)return res.send(validationResult.response.message);
+  }else{
+    delete req.body.survey;
   }
   confession.text = req.body.text;
   confession.IPAdress = req.ip;
