@@ -5,8 +5,10 @@ const actionController = require('../controllers/actions.js');
 const surveyModel = require('../models/survey.js');
 const loginEndpoint = 'https://www.wykop.pl/zaloguj/';
 const addEntryEndpoint = 'http://www.wykop.pl/xhr/entry/create/';
+const uploadAttachmentEndpoint = 'http://www.wykop.pl/xhr/embed/url/';
 const idRegex = /data-id=\\"(\d{8})\\"/;
 const hashRegex = /"([a-f0-9]{32}-\d{10})"/
+const embedHashRegex = /"hash":"([A-Za-z0-9]{32})/;
 const wykopSession = request.jar();
 var hash
 validateSurvey = function(survey){
@@ -58,11 +60,11 @@ wykopLogin = function(cb){
 acceptSurvey = function(confession, req, cb){
   cb=cb||function(){};
   var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username}`;
-  request({method:'POST', url: addEntryEndpoint+hash, form: {body: tagController.trimTags(entryBody, confession.tags), 'survey[answer]':confession.survey.answers, 'survey[question]': confession.survey.question}, jar:wykopSession}, function(err, response, body){
+  request({method:'POST', url: addEntryEndpoint+hash, form: {body: tagController.trimTags(entryBody, confession.tags), 'survey[answer]':confession.survey.answers, 'survey[question]': confession.survey.question, attachment: req.decoded._doc.embedHash}, jar:wykopSession}, function(err, response, body){
     try {
       var entryId = body.match(idRegex)[1];
     } catch (e) {
-      return cb({success: false, response: {message: 'Please renew cookies', status: 'error'}})
+      return cb({success: false, response: {message: 'Renewing cookies, please try again in 10 seconds.', status: 'error'}})
     }
     actionController(confession, req.decoded._doc._id, 1);
     confession.status = 1;
@@ -74,6 +76,16 @@ acceptSurvey = function(confession, req, cb){
     });
   });
 }
+uploadAttachment = function(url, cb){
+  request({method: 'POST', url: uploadAttachmentEndpoint+hash, form: {url}}, function(err, response, body){
+    try {
+      var hash = body.match(embedHashRegex)[1];
+    } catch (e) {
+      return cb({success: false, response: {message: 'couln\'t upload attachment'}});
+    }
+    return cb({success:true, hash: hash});
+  });
+}
 module.exports = {
-    validateSurvey, saveSurvey, acceptSurvey, wykopLogin
+    validateSurvey, saveSurvey, acceptSurvey, wykopLogin, uploadAttachment
 };

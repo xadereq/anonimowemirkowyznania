@@ -43,13 +43,29 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       return;
     }
     if(confession.survey){
-      surveyController.acceptSurvey(confession, req, function(result){
-        if(!result.success){
-          surveyController.wykopLogin();
-        }
-        if(result.success)wykopController.addNotificationComment(confession, req);
-        res.json(result);
-      });
+      //this part is totally fucked up, i should probaby do something about it ://
+      if(confession.embed){
+        surveyController.uploadAttachment(confession.embed, function(attachment){
+          if(attachment.success){
+            req.decoded._doc.embedHash = attachment.hash;
+            surveyController.acceptSurvey(confession, req, function(result){
+              if(!result.success){
+                surveyController.wykopLogin();
+              }
+              if(result.success)wykopController.addNotificationComment(confession, req);
+              res.json(result);
+            });
+          }
+        });
+      }else{
+        surveyController.acceptSurvey(confession, req, function(result){
+          if(!result.success){
+            surveyController.wykopLogin();
+          }
+          if(result.success)wykopController.addNotificationComment(confession, req);
+          res.json(result);
+        });
+      }
     }else{
       wykopController.acceptConfession(confession, req, function(result){
         if(result.success)wykopController.addNotificationComment(confession, req);
