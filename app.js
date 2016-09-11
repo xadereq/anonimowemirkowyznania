@@ -38,7 +38,7 @@ app.get('/', (req, res)=>{
 });
 app.post('/', (req, res)=>{
   var confession = new confessionModel();
-  if(req.body.survey){
+  if(req.body.survey.question){
     req.body.survey.answers = req.body.survey.answers.filter((e)=>{return e})
     var validationResult = surveyController.validateSurvey(req.body.survey);
     if(validationResult.success == false)return res.json(validationResult.response.message);
