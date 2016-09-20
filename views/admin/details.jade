@@ -34,8 +34,20 @@ block content
           | przez 
           em #{action.user.username} 
         | #{action.time}
-  |dodane z tego ip
-  |#{confession.addedFromSameIP}
+  |Wyznania dodane z tego samego IP:
+  span.badge #{confession.addedFromSameIP.length}
+  br
+  each related, index in confession.addedFromSameIP
+    case related.status
+      when 0
+        -var klass = 'time text-warning'
+      when 1 
+        -var klass = 'ok text-success'
+      default
+        -var klass = 'remove text-danger'
+    a(href="#{related._id}") Wyznanie ##{index}
+    span(class='glyphicon glyphicon-'+klass)
+    br
 block script
   script(type="text/javascript")
     include ./scripts/panel.js

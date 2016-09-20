@@ -41,7 +41,11 @@ adminRouter.get('/', (req, res)=>{
 adminRouter.get('/details/:confession_id', (req, res)=>{
   confessionModel.findById(req.params.confession_id).populate([{path:'actions', options:{sort: {_id: -1}}, populate: {path: 'user', select: 'username'}}, {path:'survey'}]).exec((err, confession)=>{
     if(err) return res.send(err);
-    res.render('./admin/details.jade', {user: req.decoded._doc, confession});
+    confessionModel.find({IPAdress: confession.IPAdress}, {_id: 1, status: 1}, function(err, results){
+      if(err)return res.send(err);
+      confession.addedFromSameIP = results;
+      res.render('./admin/details.jade', {user: req.decoded._doc, confession});
+    });
   });
 });
 adminRouter.get('/confessions/:filter?', (req, res)=>{
