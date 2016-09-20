@@ -95,11 +95,11 @@ acceptReply = function(reply, req, cb){
   if(reply.authorized){
     authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
   }
-  var entryBody = `**${reply.alias}**: ${reply.text}\n\nTo jest anonimowy komentarz.${authorized}\nZaakceptował: ${req.decoded._doc.username}`;
+  var entryBody = `**${reply.alias}**: ${reply.text}\n${authorized}\nZaakceptował: ${req.decoded._doc.username}`;
   getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (followers)=>{
     if(followers.length > 0)entryBody+=`\n! Wołam obserwujących: ${followers.map(function(f){return '@'+f;}).join(', ')}`;
     wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
-      if(err){res.json({success: false, response: {message: JSON.stringify(err), status: 'warning'}}); return;}
+      if(err){return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});}
       reply.commentID = response.id;
       reply.status = 1;
       reply.addedBy = req.decoded._doc.username;
@@ -112,5 +112,5 @@ acceptReply = function(reply, req, cb){
   });
 }
 module.exports = {
-    acceptConfession, acceptReply, deleteEntry, sendPrivateMessage, getParticipants, addNotificationComment
+    acceptConfession, acceptReply, deleteEntry, sendPrivateMessage, getParticipants, addNotificationComment, getFollowers
 };
