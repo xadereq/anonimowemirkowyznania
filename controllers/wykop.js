@@ -66,8 +66,8 @@ acceptConfession = function(confession, req, cb){
   wykop.request('Entries', 'Add', {post: {body: tagController.trimTags(entryBody, confession.tags), embed: confession.embed}}, (err, response)=>{
     if(err){
       return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
-      if(err.error.code==11){
-        throw(err);
+      if(JSON.parse(err).error.code==11){
+        wykop.relogin();
       }
     }
     confession.entryID = response.id;

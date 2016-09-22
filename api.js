@@ -33,7 +33,7 @@ apiRouter.route('/confession').get((req, res)=>{
 });
 apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
   confessionModel.findById(req.params.confession_id).populate('survey').exec((err, confession)=>{
-    if(err) res.send(err);
+    if(err) return res.send(err);
     if(confession.entryID && confession.status==1){
       res.json({success: false, response: {message: 'It\'s already added', entryID: confession.entryID, status: 'danger'}});
       return;
