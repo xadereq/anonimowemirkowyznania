@@ -65,10 +65,11 @@ acceptConfession = function(confession, req, cb){
   var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username}`;
   wykop.request('Entries', 'Add', {post: {body: tagController.trimTags(entryBody, confession.tags), embed: confession.embed}}, (err, response)=>{
     if(err){
-      return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
-      if(JSON.parse(err).error.code==11){
+      var err = JSON.parse(err);
+      if(err.error.code==11){
         wykop.relogin();
       }
+      return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
     }
     confession.entryID = response.id;
     actionController(confession, req.decoded._doc._id, 1);
