@@ -57,22 +57,22 @@ wykopLogin = function(cb){
     }
   });
 }
-acceptSurvey = function(confession, req, cb){
+acceptSurvey = function(confession, user, cb){
   cb=cb||function(){};
-  var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username}`;
-  request({method:'POST', url: addEntryEndpoint+hash, form: {body: tagController.trimTags(entryBody, confession.tags), 'survey[answer]':confession.survey.answers, 'survey[question]': confession.survey.question, attachment: req.decoded._doc.embedHash}, jar:wykopSession}, function(err, response, body){
+  var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${user.username}`;
+  request({method:'POST', url: addEntryEndpoint+hash, form: {body: tagController.trimTags(entryBody, confession.tags), 'survey[answer]':confession.survey.answers, 'survey[question]': confession.survey.question, attachment: confession.embedHash}, jar:wykopSession}, function(err, response, body){
     try {
       var entryId = body.match(idRegex)[1];
     } catch (e) {
-      return cb({success: false, response: {message: 'Renewing cookies, please try again in 10 seconds.', status: 'error'}})
+      return cb({success: false, code: codes.http.sessionExpired, response: {message: 'Renewing cookies, please try again in 10 seconds.', status: 'error'}})
     }
-    actionController(confession, req.decoded._doc._id, 1);
+    actionController(confession, user._id, 1);
     confession.status = 1;
-    confession.addedBy = req.decoded._doc.username;
+    confession.addedBy = user.username;
     confession.entryID = entryId;
     confession.save((err)=>{
-      if(err) cb({success: false, response: {message: 'couln\'t save confession', status: 'error'}})
-      return cb({success: true, response: {message: 'Entry added: '+entryId, status: 'surveyAdded'}})
+      if(err) return cb({success: true, response: {message: 'couln\'t save confession', status: 'error'}});
+      return cb({success: true, response: {message: 'Entry added: '+entryId, status: 'surveyAdded'}});
     });
   });
 }

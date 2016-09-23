@@ -47,32 +47,32 @@ apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
       if(confession.embed){
         surveyController.uploadAttachment(confession.embed, function(attachment){
           if(attachment.success){
-            req.decoded._doc.embedHash = attachment.hash;
-            surveyController.acceptSurvey(confession, req, function(result){
+            confession.embedHash = attachment.hash;
+            surveyController.acceptSurvey(confession, req.decoded._doc, function(result){
               if(!result.success){
                 surveyController.wykopLogin();
               }
-              if(result.success)wykopController.addNotificationComment(confession, req);
+              if(result.success)wykopController.addNotificationComment(confession, req.decoded._doc);
               res.json(result);
             });
           }
         });
       }else{
-        surveyController.acceptSurvey(confession, req, function(result){
+        surveyController.acceptSurvey(confession, req.decoded._doc, function(result){
           if(!result.success){
             surveyController.wykopLogin();
           }
-          if(result.success)wykopController.addNotificationComment(confession, req);
+          if(result.success)wykopController.addNotificationComment(confession, req.decoded._doc);
           res.json(result);
         });
       }
     }else{
-      wykopController.acceptConfession(confession, req, function(result){
-        if(result.success)wykopController.addNotificationComment(confession, req);
+      wykopController.acceptConfession(confession, req.decoded._doc, function(result){
+        if(result.success)wykopController.addNotificationComment(confession, req.decoded._doc);
         res.json(result);
       });
     }
-  })
+  });
 });
 apiRouter.route('/confession/danger/:confession_id').get((req, res)=>{
   confessionModel.findById(req.params.confession_id, (err, confession)=>{
