@@ -25,12 +25,6 @@ apiRouter.get('/participants/:entry_id', (req, res)=>{
   });
 });
 apiRouter.use(auth);
-apiRouter.route('/confession').get((req, res)=>{
-  confessionModel.find((err, confessions)=>{
-    if(err) res.send(err);
-    res.json(confessions);
-  });
-});
 apiRouter.route('/confession/accept/:confession_id').get((req, res)=>{
   confessionModel.findById(req.params.confession_id).populate('survey').exec((err, confession)=>{
     if(err) return res.send(err);
@@ -111,12 +105,6 @@ apiRouter.route('/confession/delete/:confession_id').get((req, res)=>{
           wykopController.sendPrivateMessage('sokytsinolop', `${req.decoded._doc.username} usunął wpis \n ${deletedEntry.id}`, ()=>{});
       });
     });
-  });
-});
-apiRouter.route('/reply').get((req, res)=>{
-  reply.find((err, replies)=>{
-    if(err) res.send(err);
-    res.json(replies);
   });
 });
 apiRouter.route('/reply/accept/:reply_id').get((req, res)=>{

@@ -8,7 +8,7 @@ getFollowers = function(entryID, notificationCommentId, cb){
     return cb(followers);
   }
   wykop.request('Entries', 'Index', {params: [entryID]}, (err, entry)=>{
-    if(err)return console.log(err);
+    if(err)return cb(err);
     for(var i in entry.comments){
       var current = entry.comments[i];
       if (current.id == notificationCommentId){
@@ -19,7 +19,7 @@ getFollowers = function(entryID, notificationCommentId, cb){
         }
       }
     }
-    return cb(followers);
+    return cb(null, followers);
   });
 }
 /**
@@ -97,7 +97,8 @@ acceptReply = function(reply, req, cb){
     authorized = '\n**Ten komentarz został dodany przez osobę dodającą wpis (OP)**';
   }
   var entryBody = `**${reply.alias}**: ${reply.text}\n${authorized}\nZaakceptował: ${req.decoded._doc.username}`;
-  getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (followers)=>{
+  getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (err, followers)=>{
+    if(err)return cb({success: false, response:{message:err}});
     if(followers.length > 0)entryBody+=`\n! Wołam obserwujących: ${followers.map(function(f){return '@'+f;}).join(', ')}`;
     wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
       if(err){return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});}

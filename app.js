@@ -131,7 +131,8 @@ app.get('/followers/:confessionid', (req, res)=>{
   confessionModel.findById(req.params.confessionid, (err, confession)=>{
     if(err)return res.sendStatus(404);
     if(confession){
-    wykopController.getFollowers(confession.entryID, confession.notificationCommentId, (followers)=>{
+    wykopController.getFollowers(confession.entryID, confession.notificationCommentId, (err, followers)=>{
+      if(err)return res.json(err);
       if(followers.length > 0){
         res.send(followers.map(function(f){
           return '@'+f;
