@@ -20,7 +20,7 @@ adminRouter.post('/login', (req, res)=>{
     if(!user){
       return res.render('./admin/login.jade', {user: {}, error: 'Nie znaleziono uzytkownia'});
     }
-    if(user.password == req.body.password){
+    if(user.password === req.body.password){
       //success login
       var token = jwt.sign(user, config.secret, {expiresIn: 1440*60});
       res.cookie('token', token);

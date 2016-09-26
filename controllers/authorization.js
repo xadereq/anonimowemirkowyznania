@@ -8,7 +8,7 @@ module.exports = function(req, res, next){
         return res.render('./admin/login.jade', {user: {}, error: 'Sesja wygasła'});
       }else{
         req.decoded = decoded;
-        next();
+        return next();
       }
     });
     }else{

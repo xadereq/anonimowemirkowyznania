@@ -32,6 +32,7 @@ saveSurvey = function(confession, surveyData){
       }
     }
     survey.save((err)=>{
+      if(err)return;
       confession.survey = survey._id;
       confession.save((err)=>{
         if(err) return false;
@@ -42,18 +43,18 @@ saveSurvey = function(confession, surveyData){
 wykopLogin = function(cb){
   cb=cb||function(){};
   request({method: 'POST', url: loginEndpoint, form: {'user[username]': config.wykop.username, 'user[password]': config.wykop.password}, jar:wykopSession}, function(err, response, body){
-    if(response.statusCode == 302){
+    if(!err && response.statusCode == 302){
       //logged in
       request({method: 'GET', url: 'http://www.wykop.pl/info/', jar:wykopSession}, function(err, response, body){
-        if(response.statusCode == 200){
+        if(response.statusCode === 200){
         hash = body.match(hashRegex)[1];
-        cb({success: true, response: {message: 'logged in', status: 'error'}});
+        return cb({success: true, response: {message: 'logged in', status: 'error'}});
       }else{
-        cb({success: false, response: {message: 'Couldn\'t get hash', status: 'error'}})
+        return cb({success: false, response: {message: 'Couldn\'t get hash', status: 'error'}})
       }
       });
     }else{
-      cb({success: false, response: {message: 'Couldn\'t login', status: 'error'}})
+      return cb({success: false, response: {message: 'Couldn\'t login', status: 'error'}})
     }
   });
 }
@@ -61,6 +62,7 @@ acceptSurvey = function(confession, req, cb){
   cb=cb||function(){};
   var entryBody = `#anonimowemirkowyznania \n${confession.text}\n\n [Kliknij tutaj, aby odpowiedzieć w tym wątku anonimowo](${config.siteURL}/reply/${confession._id}) \n[Kliknij tutaj, aby wysłać OPowi anonimową wiadomość prywatną](${config.siteURL}/conversation/${confession._id}/new) \nPost dodany za pomocą skryptu AnonimoweMirkoWyznania ( ${config.siteURL} ) Zaakceptował: ${req.decoded._doc.username}`;
   request({method:'POST', url: addEntryEndpoint+hash, form: {body: tagController.trimTags(entryBody, confession.tags), 'survey[answer]':confession.survey.answers, 'survey[question]': confession.survey.question, attachment: req.decoded._doc.embedHash}, jar:wykopSession}, function(err, response, body){
+    if(err)return;
     try {
       var entryId = body.match(idRegex)[1];
     } catch (e) {
@@ -71,8 +73,8 @@ acceptSurvey = function(confession, req, cb){
     confession.addedBy = req.decoded._doc.username;
     confession.entryID = entryId;
     confession.save((err)=>{
-      if(err) cb({success: false, response: {message: 'couln\'t save confession', status: 'error'}})
-      return cb({success: true, response: {message: 'Entry added: '+entryId, status: 'surveyAdded'}})
+      if(err)return cb({success: false, response: {message: 'couln\'t save confession', status: 'error'}});
+      return cb({success: true, response: {message: 'Entry added: '+entryId, status: 'surveyAdded'}});
     });
   });
 }

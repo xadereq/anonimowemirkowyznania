@@ -9,7 +9,7 @@ var actionTypes = {
   6: 'Dodano komentarz obsługujący powiadomienia o nowych odpowiedziach',
   7: 'DEPRECATED',
   8: 'Zaakceptowano nową odpowiedź',
-  9: 'Zmodyfikowano tagi wpisu',
+  9: 'Zmodyfikowano tagi wpisu'
 }
 function createAction(confession, userId, actionType){
   var action = new actionModel();
@@ -18,6 +18,7 @@ function createAction(confession, userId, actionType){
   action.time = new Date();
   action.type = actionType;
   action.save((err, action)=>{
+    if(err)return;
     confession.actions.push(action._id);
     confession.save();
   });

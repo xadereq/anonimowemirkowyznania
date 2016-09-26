@@ -76,7 +76,7 @@ acceptConfession = function(confession, req, cb){
     confession.status = 1;
     confession.addedBy = req.decoded._doc.username;
     confession.save((err)=>{
-      if(err) cb({success: false, response: {message: err}});
+      if(err)return cb({success: false, response: {message: err}});
       cb({success: true, response: {message: 'Entry added', entryID: response.id, status: 'success'}});
     });
   });
