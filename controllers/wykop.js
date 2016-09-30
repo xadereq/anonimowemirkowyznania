@@ -66,7 +66,8 @@ acceptConfession = function(confession, req, cb){
   wykop.request('Entries', 'Add', {post: {body: tagController.trimTags(entryBody, confession.tags), embed: confession.embed}}, (err, response)=>{
     if(err){
       if(err.error.code==11){
-        wykop.relogin();
+        cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
+        throw err;
       }
       return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
     }
@@ -106,7 +107,7 @@ acceptReply = function(reply, req, cb){
       reply.addedBy = req.decoded._doc.username;
       actionController(reply.parentID, req.decoded._doc._id, 8);
       reply.save((err)=>{
-        if(err) return cb({success: false, response: {message: err}});
+        if(err) return cb({success: false, response: {message: JSON.stringify(err)}});
         cb({success: true, response: {message: 'Reply added', commentID: response.id, status: 'success'}});
       });
     });
