@@ -5,7 +5,7 @@ var config = require('../config.js');
 getFollowers = function(entryID, notificationCommentId, cb){
   var followers = [];
   if(!notificationCommentId){
-    return cb(followers);
+    return cb(null, followers);
   }
   wykop.request('Entries', 'Index', {params: [entryID]}, (err, entry)=>{
     if(err)return cb(err);
@@ -101,13 +101,13 @@ acceptReply = function(reply, req, cb){
     if(err)return cb({success: false, response:{message:err}});
     if(followers.length > 0)entryBody+=`\n! Wołam obserwujących: ${followers.map(function(f){return '@'+f;}).join(', ')}`;
     wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
-      if(err){return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});}
+      if(err) return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
       reply.commentID = response.id;
       reply.status = 1;
       reply.addedBy = req.decoded._doc.username;
       actionController(reply.parentID, req.decoded._doc._id, 8);
       reply.save((err)=>{
-        if(err) return cb({success: false, response: {message: JSON.stringify(err)}});
+        if(err)return cb({success: false, response: {message: JSON.stringify(err)}});
         cb({success: true, response: {message: 'Reply added', commentID: response.id, status: 'success'}});
       });
     });
