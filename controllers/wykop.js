@@ -98,7 +98,7 @@ acceptReply = function(reply, req, cb){
   }
   var entryBody = `**${reply.alias}**: ${reply.text}\n${authorized}\nZaakceptował: ${req.decoded._doc.username}`;
   getFollowers(reply.parentID.entryID, reply.parentID.notificationCommentId, (err, followers)=>{
-    if(err)return cb({success: false, response:{message:err}});
+    if(err)return cb({success: false, response:{message:JSON.stringify(err)}});
     if(followers.length > 0)entryBody+=`\n! Wołam obserwujących: ${followers.map(function(f){return '@'+f;}).join(', ')}`;
     wykop.request('Entries', 'AddComment', {params: [reply.parentID.entryID], post: {body: entryBody, embed: reply.embed}}, (err, response)=>{
       if(err) return cb({success: false, response: {message: JSON.stringify(err), status: 'warning'}});
