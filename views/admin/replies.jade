@@ -25,7 +25,8 @@ block content
                   default
                     -var rowClass = 'warning'
                 tr(class=rowClass)
-                  td #{reply._id}
+                  td
+                    a.btn.btn-default.btn-xs(tabindex="0", type="button", role="button", data-toggle="popover", data-trigger="focus", title="ID wyznania", data-content="#{reply._id}", data-placement="top") #{reply._id.toString().substring(16)}
                   td #{reply.alias}
                   td #{reply.text}
                   td

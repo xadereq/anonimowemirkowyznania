@@ -39,3 +39,6 @@ $('.actionButton').click(function(){
     notify('error', `HTTP ERROR [${err.status}] - ${err.statusText}`);
   });
 });
+$(function () {
+  $('[data-toggle="popover"]').popover({html: true})
+})

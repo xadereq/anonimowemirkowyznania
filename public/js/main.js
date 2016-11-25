@@ -455,11 +455,11 @@ var wykop = {};
                 if (cached) {
                     displayItems(cached['items']);
                 } else {
-                    $.get("https://query.yahooapis.com/v1/public/yql", {q: "select * from json where url=\""+options.source + '?search_text=' + escape(q)+"\"", format: "json"}, function(txt) {
+                    $.get("https://cors-anywhere.herokuapp.com/"+options.source + '?search_text=' + escape(q), {}, function(txt) {
                         $results.hide();
-                        var items = parseJSON(txt.query.results.json, q);
+                        var items = parseJSON(txt, q);
                         displayItems(items);
-                        addToCache(q, items, txt.query.results.json.length);
+                        addToCache(q, items, txt.length);
                     }, 'json');
                 }
             } else {

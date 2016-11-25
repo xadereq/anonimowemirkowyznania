@@ -25,10 +25,9 @@ block content
                     -var rowClass = 'warning'
                 tr(class=rowClass)
                   td 
-                   a(href="details/#{confession._id}") #{confession._id}
-                   if confession.survey
-                    br
-                    span.glyphicon.glyphicon-info-sign
+                   a.btn.btn-default.btn-xs(tabindex="0", type="button", role="button", data-toggle="popover", data-trigger="focus", title="Link do wyznania", data-content="<a href=\"details/#{confession._id}\">#{confession._id}</a>", data-placement="top") #{confession._id.toString().substring(16)}
+                     if confession.survey
+                      span.glyphicon.glyphicon-list
                   td #{confession.text}
                   td
                     if confession.embed
